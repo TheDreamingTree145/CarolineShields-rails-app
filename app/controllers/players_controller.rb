@@ -10,21 +10,20 @@ before_action :find_user, only: [:edit, :update, :destroy]
   end
 
   def new
-    if !session[:tmpname]
-      @player = Player.new
-    else
       @player = Player.new(name: session[:tmpname], uid: session[:uid])
-    end
+      3.times do 
+        @position = @player.positions.build
+        @sport = @position.build_sport
+      end
 
     render :layout => "session"
   end
 
   def create
+    @player = Player.new(player_params)
+
+
     binding.pry
-    @player = Player.create(player_params)
-
-
-
     if @player.save
       session[:user_id] = @player.id
       redirect_to player_path(@player)
@@ -68,11 +67,7 @@ end #ends Controller
       :age,
       :address,
       :uid,
-      new_position:[:name],
-      sport_ids:[],
-      position_ids:[],
-      sports_attributes:[:name],
-      positions_attributes:[:name]
+      positions_attributes:[:name, :sport_id, :sport_attributes => [:name]]
       )
   end
 
